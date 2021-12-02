@@ -1,4 +1,5 @@
 import abc
+from math import inf, nan
 from typing import TYPE_CHECKING, Any, Generic, Optional, TypeVar, Union, cast
 
 from iterjson.common import JsonFormatError, _missing, _MissingType
@@ -28,8 +29,8 @@ class JsonValue(abc.ABC, Generic[_T]):
         self._reader = reader
         self._value = _missing
 
-    def _fp_read(self, n: int = -1) -> str:
-        return self._reader._fp.read(n)
+    def _fp_read(self, n: int = 1) -> str:
+        return self._reader._read_chars(n)
 
     @property
     def value(self) -> _T:
@@ -158,11 +159,11 @@ _CONTROL_CODES: dict[str, str] = {
 class StringValue(SimpleJsonValue[str]):
     def _read(self) -> str:
         result = ''
-        while (c := self._fp_read(1)) != '"':
+        while (c := self._fp_read()) != '"':
             if not c:
                 raise JsonFormatError('EOF during string')
             if c == '\\':
-                control = self._fp_read(1)
+                control = self._fp_read()
                 if not control:
                     raise JsonFormatError('EOF during string escape')
                 elif control == 'u':
@@ -178,6 +179,63 @@ class StringValue(SimpleJsonValue[str]):
                 continue
             result += c
         return result
+
+
+_JsonNumber = Union[int, float]
+
+_DIGITS = '0123456789'
+
+class NumberValue(SimpleJsonValue[_JsonNumber]):
+    def _read(self) -> _JsonNumber:
+        if self._first == 'N':
+            if (s := self._fp_read(2)) != 'aN':
+                raise JsonFormatError(s)
+            return nan
+        if self._first == '-':
+            sign = -1
+            char = self._fp_read()
+        else:
+            sign = 1
+            char = self._first
+        if char == 'I':
+            if (s := self._fp_read(7)) != 'nfinity':
+                raise JsonFormatError(s)
+            return inf * sign
+        result = ''
+        use_float = False
+        if char != '0':
+            if not char in _DIGITS:
+                raise JsonFormatError(char)
+            while True:
+                result += char
+                char = self._fp_read()
+                if not char or char not in _DIGITS:
+                    break
+        else:
+            result = '0'
+            char = self._fp_read()
+        if char == '.':
+            use_float = True
+            while True:
+                result += char
+                char = self._fp_read()
+                if not char or char not in _DIGITS:
+                    break
+            if result[-1] == '.':
+                raise JsonFormatError('Trailing decimal point in number')
+        if char in 'eE':
+            use_float = True
+            result += char
+            char = self._fp_read()
+            if char not in _DIGITS + '-+':
+                raise JsonFormatError('Exponential notation missing exponent')
+            while True:
+                result += char
+                char = self._fp_read()
+                if not char or char not in _DIGITS:
+                    break
+        self._reader._buffer = char
+        return (float(result) if use_float else int(result)) * sign
 
 
 _JsonConstant = Union[None, bool]

@@ -3,7 +3,7 @@ from typing import Any, Optional, TextIO, Union, cast, get_args
 
 from iterjson.common import JsonFormatError, _missing, _MissingType
 from iterjson.values import (ArrayValue, ConstantValue, GenericJsonValue,
-                             JsonValue, ObjectValue, StringValue)
+                             JsonValue, NumberValue, ObjectValue, StringValue)
 
 __all__ = ['JsonReader']
 
@@ -20,18 +20,23 @@ _CHAR_TYPE_MAP: dict[str, type[JsonValue[Any]]] = {
     'f': ConstantValue,
 }
 
+for _number_char in '-0123456789IN':
+    _CHAR_TYPE_MAP[_number_char] = NumberValue
+
 _WHITESPACE = ' \r\n\t'
 
 
 class JsonReader:
     _fp: TextIO
     _root: Union[GenericJsonValue, _MissingType]
+    _buffer: Optional[str]
 
     def __init__(self, input: Union[TextIO, AnyPath]) -> None:
         if isinstance(input, get_args(AnyPath)):
             input = open(cast(AnyPath, input), 'rt')
         self._fp = cast(TextIO, input)
         self._root = _missing
+        self._buffer = None
 
     @property
     def root(self) -> GenericJsonValue:
@@ -46,6 +51,15 @@ class JsonReader:
     def __exit__(self, *args) -> Optional[bool]:
         return self._fp.__exit__(*args)
 
+    def _read_chars(self, n: int = 1) -> str:
+        if self._buffer:
+            result = self._buffer
+            self._buffer = None
+            if n == 1:
+                return result
+            return result + self._fp.read(n - 1)
+        return self._fp.read(n)
+
     def _read_value(self, char: Optional[str] = None) -> GenericJsonValue:
         if char is None:
             char = self._read_past_whitespace()
@@ -55,7 +69,7 @@ class JsonReader:
         return type(char, self)
 
     def _read_past_whitespace(self) -> str:
-        while (c := self._fp.read(1)) in _WHITESPACE:
+        while (c := self._read_chars()) in _WHITESPACE:
             if c == '':
                 raise JsonFormatError('EOF')
         return c

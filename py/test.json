@@ -1,10 +1,1 @@
-{
-    "a": {
-        "l": "z",
-        "r": "b"
-    },
-    "b": {
-        "l": "a",
-        "r": "c"
-    }
-}
+[1e10, Infinity, -Infinity, NaN]
