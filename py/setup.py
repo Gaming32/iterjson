@@ -6,7 +6,7 @@ import setuptools
 
 setuptools.setup(
     name = 'iterjson',
-    version = '1.0.0',
+    version = '1.0.0b1',
     url = 'https://github.com/Gaming32/iterjson',
     project_urls = {
         'Source': 'https://github.com/Gaming32/iterjson/tree/main/py',
