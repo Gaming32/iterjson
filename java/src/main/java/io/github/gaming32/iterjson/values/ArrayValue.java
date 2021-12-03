@@ -31,7 +31,7 @@ public final class ArrayValue extends CollectionJsonValue<List<Object>, JsonValu
             if (c != ',') {
                 JsonFormatException.throwOnCharacter(c);
             }
-            current = NullableOptional.of(reader.readValue());
+            current = NullableOptional.of(reader.readValue(reader.readPastWhitespace()));
         } else {
             current = NullableOptional.of(reader.readValue(c));
         }

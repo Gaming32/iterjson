@@ -15,6 +15,7 @@ import io.github.gaming32.iterjson.values.ArrayValue;
 import io.github.gaming32.iterjson.values.ConstantValue;
 import io.github.gaming32.iterjson.values.JsonValue;
 import io.github.gaming32.iterjson.values.NumberValue;
+import io.github.gaming32.iterjson.values.ObjectValue;
 import io.github.gaming32.iterjson.values.StringValue;
 
 public final class DataReader implements AutoCloseable {
@@ -25,6 +26,7 @@ public final class DataReader implements AutoCloseable {
     }
 
     private static final Map<Character, JsonValueConstructor> CHAR_TYPE_MAP = new HashMap<Character, JsonValueConstructor>() {{
+        put('{', ObjectValue::new);
         put('[', ArrayValue::new);
 
         put('"', StringValue::new);
@@ -128,7 +130,7 @@ public final class DataReader implements AutoCloseable {
         if (constructor == null) {
             JsonFormatException.throwOnCharacter(c);
         }
-        return (JsonValue<Object>)constructor.construct((char)c, this);
+        return (JsonValue<Object>)constructor.construct(c, this);
     }
 
     public char readPastWhitespace() throws IOException{
