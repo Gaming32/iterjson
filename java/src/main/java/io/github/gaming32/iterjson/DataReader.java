@@ -13,6 +13,7 @@ import java.util.Map;
 
 import io.github.gaming32.iterjson.values.ConstantValue;
 import io.github.gaming32.iterjson.values.JsonValue;
+import io.github.gaming32.iterjson.values.StringValue;
 
 public final class DataReader implements AutoCloseable {
     @SuppressWarnings("rawtypes")
@@ -22,6 +23,8 @@ public final class DataReader implements AutoCloseable {
     }
 
     private static final Map<Character, JsonValueConstructor> CHAR_TYPE_MAP = new HashMap<Character, JsonValueConstructor>() {{
+        put('"', StringValue::new);
+
         put('n', ConstantValue::new);
         put('t', ConstantValue::new);
         put('f', ConstantValue::new);
@@ -58,12 +61,12 @@ public final class DataReader implements AutoCloseable {
     }
 
     private String readAsString(int n) throws IOException {
-        if (n == 1) {
+        if (n == 1) { // Common case
             int c = reader.read();
             if (n == -1) {
                 throw new JsonFormatException("EOF");
             }
-            return Character.toString((char)c); // Common case
+            return Character.toString((char)c);
         }
         char[] buff = new char[n];
         n = reader.read(buff, 0, n);
