@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.github.gaming32.iterjson.values.ArrayValue;
 import io.github.gaming32.iterjson.values.ConstantValue;
 import io.github.gaming32.iterjson.values.JsonValue;
 import io.github.gaming32.iterjson.values.NumberValue;
@@ -24,6 +25,8 @@ public final class DataReader implements AutoCloseable {
     }
 
     private static final Map<Character, JsonValueConstructor> CHAR_TYPE_MAP = new HashMap<Character, JsonValueConstructor>() {{
+        put('[', ArrayValue::new);
+
         put('"', StringValue::new);
 
         put('n', ConstantValue::new);

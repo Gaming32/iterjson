@@ -1,6 +1,9 @@
 package io.github.gaming32.iterjson;
 
 public final class NullableOptional<T> {
+    @SuppressWarnings("rawtypes")
+    private static final NullableOptional EMPTY = new NullableOptional();
+
     private final T value;
     private final boolean present;
 
@@ -14,8 +17,9 @@ public final class NullableOptional<T> {
         this.present = true;
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> NullableOptional<T> empty() {
-        return new NullableOptional<>();
+        return (NullableOptional<T>)EMPTY;
     }
 
     public static <T> NullableOptional<T> of(T value) {
