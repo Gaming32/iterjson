@@ -13,6 +13,7 @@ import java.util.Map;
 
 import io.github.gaming32.iterjson.values.ConstantValue;
 import io.github.gaming32.iterjson.values.JsonValue;
+import io.github.gaming32.iterjson.values.NumberValue;
 import io.github.gaming32.iterjson.values.StringValue;
 
 public final class DataReader implements AutoCloseable {
@@ -28,6 +29,8 @@ public final class DataReader implements AutoCloseable {
         put('n', ConstantValue::new);
         put('t', ConstantValue::new);
         put('f', ConstantValue::new);
+
+        "-0123456789IN".chars().forEach(c -> put((char)c, NumberValue::new));
     }};
 
     private static final List<Character> WHITESPACE = Arrays.asList(' ', '\r', '\n', '\t');
@@ -86,6 +89,19 @@ public final class DataReader implements AutoCloseable {
         return readAsString(n);
     }
 
+    public char readCharOrNull() throws IOException {
+        if (this.buffer != '\0') {
+            char buffer = this.buffer;
+            this.buffer = '\0';
+            return buffer;
+        }
+        int result = reader.read();
+        if (result == -1) {
+            return '\0';
+        }
+        return (char)result;
+    }
+
     public char readChar() throws IOException {
         if (this.buffer != '\0') {
             char buffer = this.buffer;
@@ -116,5 +132,9 @@ public final class DataReader implements AutoCloseable {
         char c;
         while (WHITESPACE.contains(c = readChar()));
         return c;
+    }
+
+    public void setBuffer(char c) {
+        buffer = c;
     }
 }

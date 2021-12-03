@@ -22,10 +22,7 @@ public abstract class JsonValue<T> {
     }
 
     public T getValue() throws IOException {
-        if (!value.isPresent()) {
-            value = NullableOptional.of(read0());
-        }
-        return value.get();
+        return read();
     }
 
     public T read() throws IOException {
