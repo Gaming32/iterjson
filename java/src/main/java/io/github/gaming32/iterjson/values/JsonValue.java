@@ -2,12 +2,12 @@ package io.github.gaming32.iterjson.values;
 
 import java.io.IOException;
 
-import io.github.gaming32.iterjson.JsonReader;
+import io.github.gaming32.iterjson.DataReader;
 import io.github.gaming32.iterjson.NullableOptional;
 
 public abstract class JsonValue<T> {
     final char first;
-    final JsonReader reader;
+    final DataReader reader;
     NullableOptional<T> value;
 
     protected JsonValue() {
@@ -15,7 +15,7 @@ public abstract class JsonValue<T> {
         this.reader = null;
     }
 
-    public JsonValue(char first, JsonReader reader) {
+    public JsonValue(char first, DataReader reader) {
         this.first = first;
         this.reader = reader;
         this.value = NullableOptional.empty();

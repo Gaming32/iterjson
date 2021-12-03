@@ -2,11 +2,11 @@ package io.github.gaming32.iterjson.values;
 
 import java.io.IOException;
 
+import io.github.gaming32.iterjson.DataReader;
 import io.github.gaming32.iterjson.JsonFormatException;
-import io.github.gaming32.iterjson.JsonReader;
 
 public final class ConstantValue extends SimpleJsonValue<Boolean> {
-    public ConstantValue(char first, JsonReader reader) {
+    public ConstantValue(char first, DataReader reader) {
         super(first, reader);
     }
 
