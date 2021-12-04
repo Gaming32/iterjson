@@ -59,12 +59,29 @@ public final class NumberValue extends SimpleJsonValue<Number> {
         return isDouble ? (byte)doubleValue : (byte)longValue;
     }
 
+    public Number longOrDoubleValue() throws IOException {
+        if (!hasValue) {
+            return read0();
+        }
+        return isDouble ? Double.valueOf(doubleValue) : Long.valueOf(longValue);
+    }
+
+    public Number intOrDoubleValue() throws IOException {
+        if (!hasValue) {
+            read0();
+        }
+        return isDouble ? Double.valueOf(doubleValue) : (
+            longValue > Integer.MAX_VALUE || longValue < Integer.MIN_VALUE ?
+                Double.valueOf(longValue) : Integer.valueOf((int)longValue)
+        );
+    }
+
     @Override
     public Number read() throws IOException {
         if (!hasValue) {
             return read0();
         }
-        return isDouble ? doubleValue : longValue;
+        return isDouble ? Double.valueOf(doubleValue) : Long.valueOf(longValue);
     }
 
     @Override
@@ -77,7 +94,7 @@ public final class NumberValue extends SimpleJsonValue<Number> {
             }
             isDouble = true;
             doubleValue = Double.NaN;
-            return doubleValue;
+            return Double.valueOf(doubleValue);
         }
         int sign;
         char c;
@@ -95,7 +112,7 @@ public final class NumberValue extends SimpleJsonValue<Number> {
             }
             isDouble = true;
             doubleValue = Double.POSITIVE_INFINITY * sign;
-            return doubleValue;
+            return Double.valueOf(doubleValue);
         }
         StringBuilder result = new StringBuilder();
         isDouble = false;
@@ -135,12 +152,12 @@ public final class NumberValue extends SimpleJsonValue<Number> {
         if (!isDouble) {
             try {
                 longValue = Long.parseLong(s) * sign;
-                return longValue;
+                return Long.valueOf(longValue);
             } catch (NumberFormatException e) {
                 isDouble = true; // Use a double if the number is to big to fit into a long
             }
         }
         doubleValue = Double.parseDouble(s) * sign;
-        return doubleValue;
+        return Double.valueOf(doubleValue);
     }
 }

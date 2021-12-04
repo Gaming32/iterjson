@@ -4,8 +4,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 /**
- * This implemention is for reference. Due to Java not having multiple inheritance,
- * this code needed to be copied into CollectionJsonValue.java for actual use
+ * This implemention is usded only for reference. Due to Java not having multiple
+ * inheritance, this code needed to be copied into CollectionJsonValue.java for
+ * actual use
  */
 public abstract class NextOnlyIterator<E> implements Iterator<E> {
     private boolean valueReady;

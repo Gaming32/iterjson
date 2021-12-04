@@ -6,9 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.github.gaming32.iterjson.values.ArrayValue;
@@ -38,7 +36,7 @@ public final class DataReader implements AutoCloseable {
         "-0123456789IN".chars().forEach(c -> put((char)c, NumberValue::new));
     }};
 
-    private static final List<Character> WHITESPACE = Arrays.asList(' ', '\r', '\n', '\t');
+    private static final String WHITESPACE = " \r\n\t";
 
     private final Reader reader;
     private char buffer;
@@ -135,7 +133,7 @@ public final class DataReader implements AutoCloseable {
 
     public char readPastWhitespace() throws IOException{
         char c;
-        while (WHITESPACE.contains(c = readChar()));
+        while (WHITESPACE.indexOf(c = readChar()) != -1);
         return c;
     }
 
