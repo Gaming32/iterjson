@@ -17,10 +17,9 @@ import io.github.gaming32.iterjson.values.ObjectValue;
 import io.github.gaming32.iterjson.values.StringValue;
 
 public final class DataReader implements AutoCloseable {
-    @SuppressWarnings("rawtypes")
     @FunctionalInterface
     private static interface JsonValueConstructor {
-        public JsonValue construct(char first, DataReader reader);
+        public JsonValue<?> construct(char first, DataReader reader);
     }
 
     private static final Map<Character, JsonValueConstructor> CHAR_TYPE_MAP = new HashMap<Character, JsonValueConstructor>() {{

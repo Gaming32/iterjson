@@ -1,8 +1,7 @@
 package io.github.gaming32.iterjson;
 
 public final class NullableOptional<T> {
-    @SuppressWarnings("rawtypes")
-    private static final NullableOptional EMPTY = new NullableOptional();
+    private static final NullableOptional<?> EMPTY = new NullableOptional<>();
 
     private final T value;
     private final boolean present;
