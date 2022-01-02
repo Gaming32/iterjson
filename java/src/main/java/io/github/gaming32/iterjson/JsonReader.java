@@ -37,7 +37,7 @@ public final class JsonReader implements AutoCloseable {
         reader.close();
     }
 
-    public JsonValue<Object> getRoot() throws IOException {
+    public JsonValue<?> getRoot() throws IOException {
         if (root == null) {
             root = reader.readValue();
         }

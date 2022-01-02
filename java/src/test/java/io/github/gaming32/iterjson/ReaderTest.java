@@ -7,7 +7,6 @@ import io.github.gaming32.iterjson.values.ArrayValue;
 import io.github.gaming32.iterjson.values.JsonValue;
 
 public class ReaderTest {
-    @SuppressWarnings("rawtypes")
     public static void main(String[] args) throws IOException {
         try (JsonReader reader = new JsonReader(
             new InputStreamReader(
@@ -15,8 +14,8 @@ public class ReaderTest {
             )
         )) {
             // System.out.println(reader.getRoot().read());
-            for (JsonValue<Object> val : (ArrayValue)(JsonValue)reader.getRoot()) {
-                System.out.println(val);
+            for (JsonValue<Object> val : (ArrayValue)reader.getRoot()) {
+                System.out.println(val.getValue());
             }
         }
     }
