@@ -3,6 +3,7 @@ package io.github.gaming32.iterjson.values;
 import java.io.IOException;
 import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -11,6 +12,8 @@ import io.github.gaming32.iterjson.JsonFormatException;
 import io.github.gaming32.iterjson.NullableOptional;
 
 public final class ObjectValue extends CollectionJsonValue<Map<String, Object>, Map.Entry<String, JsonValue<Object>>> {
+    private boolean isOrdered;
+
     public ObjectValue(char first, DataReader reader) {
         super(first, reader);
     }
@@ -51,9 +54,24 @@ public final class ObjectValue extends CollectionJsonValue<Map<String, Object>, 
         return new AbstractMap.SimpleImmutableEntry<>(name, reader.readValue());
     }
 
+    public Map<String, Object> read(boolean ordered) throws IOException {
+        if (!value.isPresent()) {
+            value = NullableOptional.of(read0(ordered));
+        }
+        if (ordered && !isOrdered) {
+            throw new IllegalStateException("Cannot access ordered JSON object when it was read unordered");
+        }
+        return value.get();
+    }
+
     @Override
     protected Map<String, Object> read0() throws IOException {
-        Map<String, Object> result = new HashMap<>();
+        return read0(isOrdered);
+    }
+
+    protected Map<String, Object> read0(boolean ordered) throws IOException {
+        isOrdered = ordered;
+        Map<String, Object> result = ordered ? new LinkedHashMap<>() : new HashMap<>();
         for (Map.Entry<String, JsonValue<Object>> entry : this) {
             result.put(entry.getKey(), entry.getValue().read());
         }
